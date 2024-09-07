@@ -1,0 +1,2 @@
+Para la correcta ejecución del programa les recomiendo cargar la imagen en docker y cambiar los nombres del esquema en los archivos, ya que cree una imagen distinta con otros nombres pero con las mismas especificaciones.
+También deberían verificar que las rutas del archivo ejecutable están bien definidas, sino cambienlas a cual necesiten. Además es muy importante que importen las dependecias del archivo pom.xml para que no les falte ningún archivo.
