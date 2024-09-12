@@ -40,8 +40,14 @@ public class archivoDeEjecucion {
 		DataBase.crearForeignKeys();
 		
 		ProductoDAO pdao=(ProductoDAO) Factory.createDAO("producto");
-		List<Entity> list=pdao.getProductoMayorRecaudaciÛn("todos");
-		System.out.println("Productos de mayor recaudaciÛn");
+		list=pdao.getProductoMayorRecaudaci√≥n("todos");
+		System.out.println("Productos de mayor recaudaci√≥n");
+		for(Entity e: list) {
+			System.out.println(e);
+		}
+
+		list=pdao.getProductoMayorRecaudaci√≥n("uno");
+		System.out.println("Producto de mayor compra");
 		for(Entity e: list) {
 			System.out.println(e);
 		}
