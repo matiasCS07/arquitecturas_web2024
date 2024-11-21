@@ -1,0 +1,163 @@
+version: '3.9'
+
+services:
+  api-admin:
+    container_name: api_admin
+    image:  api-admin-app:1.0.0
+    build:  ./microAdmininistradorDeMonopatines
+    ports:
+      - 8080:8080
+    networks:
+    - microservices-net
+    depends_on:
+      - db-tarifa
+      - db-admin
+      - db-usuario
+      - db-monopatin
+      - db-viaje
+
+  db-admin:
+    image: postgres:12
+    container_name: db-admin
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - microservices-net
+    volumes:
+      - db-admin-data:/var/lib/postgres
+    command: postgres -c 'log_statement=all'
+
+  api-monopatin:
+    container_name: api_monopatin
+    image:  api-monopatin-app:1.0.0
+    build:  ./microMonopatin
+    ports:
+      - 8081:8080
+    networks:
+      - microservices-net
+    depends_on:
+      - db-tarifa
+      - db-admin
+      - db-usuario
+      - db-monopatin
+      - db-viaje
+
+  db-monopatin:
+    image: postgres:12
+    container_name: db-monopatin
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - microservices-net
+    volumes:
+      - db-monopatin-data:/var/lib/postgres
+    command: postgres -c 'log_statement=all'
+
+  api-user:
+    container_name: api_user
+    image:  api-user-app:1.0.0
+    build:  ./microUsuario
+    ports:
+      - 8083:8080
+    networks:
+      - microservices-net
+    depends_on:
+      - db-tarifa
+      - db-admin
+      - db-usuario
+      - db-monopatin
+      - db-viaje
+
+  db-usuario:
+    image: postgres:12
+    container_name: db-usuario
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - microservices-net
+    volumes:
+      - db-usuario-data:/var/lib/postgres
+    command: postgres -c 'log_statement=all'
+  
+
+  api-viaje:
+    container_name: api_viaje
+    image:  api-viaje-app:1.0.0
+    build:  ./microViaje
+    ports:
+      - 8082:8080
+    networks:
+      - microservices-net      
+    depends_on:
+      - db-tarifa
+      - db-admin
+      - db-usuario
+      - db-monopatin
+      - db-viaje
+
+  db-viaje:
+    image: postgres:12
+    container_name: db-viaje
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - microservices-net
+    volumes:
+      - db-viaje-data:/var/lib/postgres
+    command: postgres -c 'log_statement=all'
+
+  api-tarifa:
+    container_name: api_tarifa
+    image:  api-tarifa-app:1.0.0
+    build:  ./microTarifa
+    ports:
+      - 8084:8080
+    networks:
+      - microservices-net      
+    depends_on:
+      - db-tarifa
+      - db-admin
+      - db-usuario
+      - db-monopatin
+      - db-viaje
+
+  db-tarifa:
+    image: mongo:latest
+    container_name: db-tarifa
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: tarifa_db
+    ports:
+      - "27017:27017" 
+    networks:
+      - microservices-net
+    volumes:
+      - db-tarifa-data:/data/db
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  db-admin-data:
+  db-monopatin-data:
+  db-usuario-data:
+  db-viaje-data:
+  db-tarifa-data:

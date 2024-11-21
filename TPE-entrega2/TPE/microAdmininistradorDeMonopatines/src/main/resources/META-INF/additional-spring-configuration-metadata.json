@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "security.datasource.url",
+    "type": "java.lang.String",
+    "description": "URL de conexión a la base de datos de seguridad"
+  },
+  {
+    "name": "security.datasource.username",
+    "type": "java.lang.String",
+    "description": "Nombre de usuario para la base de datos de seguridad"
+  },
+  {
+    "name": "security.datasource.password",
+    "type": "java.lang.String",
+    "description": "Contraseña para la base de datos de seguridad"
+  },
+  {
+    "name": "security.datasource.driver-class-name",
+    "type": "java.lang.String",
+    "description": "Nombre de la clase del controlador JDBC para la base de datos de seguridad"
+  },
+  {
+    "name": "security.datasource.hikari.maximum-pool-size",
+    "type": "java.lang.Integer",
+    "description": "Tamaño máximo del pool de conexiones de HikariCP para la base de datos de seguridad"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  }
+]}

@@ -1,0 +1,585 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Aplicación de gestión de monopatines
+  description: app orientada al desarrollo en microservicios. la misma desarrolla la situación propuesta por la cátedra (se documentan solo los endpoints de administrador)
+  
+servers:
+  - url:  localhost/api/administrador
+tags:
+  - name: administrador
+    description: se encarga de los servicios realizados por el administrador de monopatines
+  - name: monopatin
+    description: se encarga de los servicios realizados en la base de monopatines
+  - name: usuario
+    description: servicios realizados sobre la base de usuarios
+  - name: viaje
+    description: servicios relacionados con los viajes realizados por usuarios y monopatines
+  
+paths:
+  #Endpoints definidos de administrador_monopatines
+  /:
+    get:
+      tags:
+      - administrador
+      summary: obtener los datos del admin
+      description: path que retorna la totalidad de los datos manejados por el administrador
+      servers:
+      - url:  localhost/api/administrador
+      responses:
+        '200':
+          description: se ha realizado la operación correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/administrador"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /reportes/monopatines/cantidadViajes/{cantViajes}/{anio}:
+    get:
+      tags:
+      - administrador
+      - monopatin
+      summary: reporte de monopatines con cantidad de viajes en un año
+      description: genera un reporte de los monopatines que cumplen cierto minimo de viajes, en un año especificado
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: cantViajes
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: anio
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description:  la operacion se realizo de manera correcta
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /reportes/monopatines/estado:
+    get:
+      tags:
+      - administrador
+      - monopatin
+      summary: reporte de monopatines por categorizado por estado
+      description:  se encarga de generar y retornar un reporte de los monopatines, dependiendo de su estado actual
+      servers:
+      - url:  localhost/api/administrador
+      responses:
+        '200':
+          description: se realizó la operación de manera exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+          
+  /reportes/viajes/facturado/fecha:
+    get:
+      tags:
+      - administrador
+      - viaje
+      summary:  cantidad de dinero facturado en una fecha
+      description:  se encarga de recopilar la cantidad de dinero facturado en una fecha determinada
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: mesIni
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: mesFin
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: anio
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: la operacion se realizo exitosamente
+          content:
+            text/plain:
+              schema:
+                type: integer
+        '404':
+            $ref: "#/components/responses/NotFound"
+  
+  /usuario/{id}:
+    delete:
+      tags:
+      - administrador
+      - usuario
+      summary:  da de baja a un usuario
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+            $ref: "#/components/responses/ok"
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /paradas:
+    get:
+      tags:
+      - administrador
+      summary:  obtener las paradas listadas
+      servers:
+      - url:  localhost/api/administrador
+      responses:
+        '200':
+          description:  la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/parada"
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /parada/añadir:
+    patch:
+      tags:
+      - administrador
+      summary:  añadir una parada
+      description: se modifica parcialmente al administrador para agregar una parada al registro que el administrador posee
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description:  la operación se realizó con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/parada"
+        '400':
+            $ref: "#/components/responses/BadRequest"
+            
+  /parada/borrar:
+    patch:
+      tags:
+      - administrador
+      summary: borrar una parada
+      description:  se modifica parcialmente al administrador para borrar una parada del registro del administrador
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema: 
+          type: number
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/parada"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /tarifa:
+    get:
+      tags:
+      - administrador
+      summary:  obtener la tarifa que rige actualmente
+      description:  retorna la tarifa con la fecha de vigencia mas cercana a la actual. no retorna la tarifa futura
+      servers:
+      - url:  localhost/api/administrador
+      responses:
+        '200':
+          description:  la operacion se realizó con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tarifa"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /tarifa/cambiar:
+    patch:
+      tags:
+      - administrador
+      summary:  cambiar los datos de una tarifa
+      description:  edita parcialmente el administrador para modificar el registro de la tarifa de una fecha determinada, ademas modifica la entidad tarifa relacionada
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: tarifa
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: dia
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: mes
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: anio
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tarifa"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /tarifa/extra/cambiar:
+    patch:
+      tags:
+      - administrador
+      summary:  cambiar los datos de la tarifa extra
+      description:  edita parcialmente el administrador para modificar el registro de la tarifa extra  de una fecha determinada, ademas     modifica laentidad tarifa relacionada
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: tarifa
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: dia
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: mes
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: anio
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description:  la operación se realizó con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tarifa"
+        '400':
+            $ref: "#/components/responses/NotFound"
+
+  /monopatines/cercanos:
+    get:
+      tags:
+      - administrador
+      summary:  obtener los monopatines cercanos
+      description: se retornan los monopatines cercanos a una ubicacion brindada
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /monopatin/cercano:
+    get:
+      tags:
+      - administrador
+      - monopatin
+      summary:  obtener el monopatin más cercano
+      description:  dando una ubicacion especificada, se busca y retorna el monopatin más cercano a la misma
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /monopatin/añadir:
+    post:
+      tags:
+      - administrador
+      - monopatin
+      summary:  añadir un monopatin al administrador
+      description:  a través del administrador, se añade un monopatin nuevo, modificando la lista del administrador y, creando una nueva entidad
+      servers:
+      - url:  localhost/api/administrador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request-monopatin"
+      responses:
+        '200':
+          description:  la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/BadRequest"
+  
+  /monopatin/mantenimiento/{id}:
+    patch:
+      tags:
+      - administrador
+      - monopatin
+      summary:  cambia el estado de mantenimiento de un monopatin
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: estado
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: habilitado
+        in: query
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+          $ref: '#/components/responses/NotFound'
+    
+  /monopatin/tiempo/{id}:
+    patch:
+      tags:
+      - administrador
+      - monopatin
+      summary:  modificar el tiempo de uso de un monopatin
+      description:  se utiliza para sumar el tiempo del ultimo viaje del monopatin, a su recuento total de tiempo
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: tiempo
+        in: query
+        required: true
+        schema:
+          type: string
+          format: duration
+      responses:
+        '200':
+          description:  la operacion fue completada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /monopatin/{id}:
+    delete:
+      tags:
+      - administrador
+      - monopatin
+      summary:  eliminar un monopatin
+      description:  elimina un monopatin de la lista de monopatines administados, además elimina la entidad
+      servers:
+      - url:  localhost/api/administrador
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+            $ref: "#/components/responses/ok"
+        '400':
+            $ref: '#/components/responses/NotFound'
+  
+components:
+  schemas:
+    response-monopatin:
+      type: object
+      properties:
+        id: 
+          type: integer
+        longitud:
+          type: number
+          format: double
+        latitud:
+          type: number
+          format: double
+        kilometrosTotales:
+          type: string
+        estado:
+          type: string
+        habilitado:
+          type: boolean
+        tiempoUso:
+          type: string
+          format: duration
+        mensaje:
+          type: string
+        exito:
+          type: boolean
+    
+    request-monopatin:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: double
+        longitud:
+          type: number
+          format: double
+        estado:
+          type: boolean
+          
+    administrador:
+      type: object
+      properties:
+        id_admin: 
+          type: integer
+          format: long
+        monopatines:
+          type: array
+          items:
+            $ref: "#/components/schemas/response-monopatin"
+        paradas:
+          type: array
+          items:
+            $ref: "#/components/schemas/parada"
+        tarifa:
+          type: array
+          items:
+            $ref: "#/components/schemas/tarifa"
+        tarifaExtra:
+          type: array
+          items:
+            $ref: "#/components/schemas/tarifa"
+    
+    parada:
+      type: array
+      items:
+        type: number
+        format: double
+      minItems: 2
+      maxItems: 2
+      description: latitud y longitud
+      
+    tarifa:
+      type: object
+      properties:
+        tarifa:
+          type: number
+          format: long
+        fechaInicio:
+          type: string
+          format: localdate
+    
+  responses:
+    ok:
+      description:  "la operación se realizó con exito"
+    
+    NotFound:
+      description:  "no se encontró el objeto a modificar"
+      
+    BadRequest:
+      description:  "se ha realizado una petición de manera incorrecta"

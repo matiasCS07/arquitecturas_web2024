@@ -1,0 +1,330 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Aplicación de gestión de monopatines
+  description: app orientada al desarrollo en microservicios. la misma desarrolla la situación propuesta por la cátedra (se documentan solo los endpoints de monopatin)
+  
+servers:
+  - url:  localhost/api/monopatin
+  
+paths:
+  #Endpoints definidos de monopatines
+  /:
+    get:
+      summary: obtener todos los monopatines
+      description: path que retorna la totalidad de los monopatines cargados
+      responses:
+        '200':
+          description: se ha realizado la operación correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /habilitados/{habilitado}:
+    get:
+      summary: obtener los monopatines en un valor de habilitación
+      parameters:
+      - name: habilitado
+        in: path
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description:  la operacion se realizo de manera correcta
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: long
+                  description:  id de monopatin
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /reporte/usoKilometros/{conPausa}:
+    get:
+      summary: reporte de monopatines ordenados por uso (con o sin pausa)
+      parameters:
+      - name: conPausa
+        in: path
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: se realizó la operación de manera exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+          
+  /reporte/kilometro:
+    get:
+      summary:  genera un reporte de monopatines, ordenados por kilometros recorridos
+      responses:
+        '200':
+          description: la operacion se realizo exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+  
+  /reporte/tiempoUso/conPausas:
+    get:
+      summary:  generar reporte de monopatines ordenados por tiempo de uso, con pausas
+      responses:
+        '200':
+          description:  la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /reporte/tiempoUso/sinPausas:
+    get:
+      summary:  generar reporte de monopatines ordenados por tiempo de uso, sin pausas
+      responses:
+        '200':
+          description:  la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '404':
+            $ref: "#/components/responses/NotFound"
+            
+  /añadir:
+    post:
+      summary: agregar un monopatin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request-monopatin"
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /{id}:
+    get:
+      summary:  obtener un monopatin por id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: long
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /cercanos:
+    get:
+      summary:  obtener los monopatines cercanos
+      description: se retornan los monopatines cercanos a una ubicacion brindada
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /cercano:
+    patch:
+      summary:  obtener el monopatin más cercano
+      description:  dando una ubicacion especificada, se busca y retorna el monopatin más cercano a la misma
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /mantenimiento/{id}:
+    patch:
+      summary:  cambia el estado de mantenimiento de un monopatin
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: estado
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: habilitado
+        in: query
+        required: true
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+          $ref: '#/components/responses/NotFound'
+    
+  /tiempo/{id}:
+    patch:
+      summary:  modificar el tiempo de uso de un monopatin
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: tiempo
+        in: query
+        required: true
+        schema:
+          type: string
+          format: duration
+      responses:
+        '200':
+          description:  la operacion fue completada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /eliminar/{id}:
+    delete:
+      summary:  eliminar un monopatin
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+            $ref: "#/components/responses/ok"
+        '400':
+            $ref: '#/components/responses/NotFound'
+  
+components:
+  schemas:
+    response-monopatin:
+      type: object
+      properties:
+        id: 
+          type: integer
+        longitud:
+          type: number
+          format: double
+        latitud:
+          type: number
+          format: double
+        kilometrosTotales:
+          type: string
+        estado:
+          type: string
+        habilitado:
+          type: boolean
+        tiempoUso:
+          type: string
+          format: duration
+        mensaje:
+          type: string
+        exito:
+          type: boolean
+    
+    request-monopatin:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: double
+        longitud:
+          type: number
+          format: double
+        estado:
+          type: boolean
+    
+  responses:
+    ok:
+      description:  "la operación se realizó con exito"
+    
+    NotFound:
+      description:  "no se encontró el objeto a modificar"
+      
+    BadRequest:
+      description:  "se ha realizado una petición de manera incorrecta"

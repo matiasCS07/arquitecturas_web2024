@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Aplicación de gestión de monopatines
+  description: app orientada al desarrollo en microservicios. la misma desarrolla la situación propuesta por la cátedra (se documentan solo los endpoints de usuarios)
+  
+servers:
+  - url:  localhost/api/usuarios
+  
+paths:
+  #Endpoints definidos de usuarios
+  /:
+    get:
+      summary: obtener todos los usuarios
+      description: path que retorna la totalidad de los usuarios cargados
+      responses:
+        '200':
+          description: se ha realizado la operación correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-usuario"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /añadir:
+    post:
+      summary: agregar un monopatin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/request-monopatin"
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /{id}:
+    get:
+      summary:  obtener un usuario por id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: long
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-usuario"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /editar/{id}:
+    put:
+      summary:  actualizar la totalidad de un usuario
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: long
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/usuario"
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/response-usuario"
+        '400':
+            $ref: "#/components/responses/NotFound"
+            
+  /borrar/{id}:
+    delete:
+      summary:  eliminar un usuario
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+            $ref: "#/components/responses/ok"
+        '400':
+            $ref: '#/components/responses/NotFound'
+
+  /monopatin/activar:
+    post:
+      summary:  activar un monopatin
+      description: se activa un monopatin, creando una nueva instancia de viaje
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: long
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-viaje"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /monopatin/cercanos:
+    get:
+      summary:  obtener los monopatines más cercanos
+      description:  dando una ubicacion especificada, se busca y retorna los monopatines más cercano a la misma
+      parameters:
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      responses:
+        '200':
+          description: la operacion fue realizada con exito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/response-monopatin"
+        '400':
+            $ref: "#/components/responses/NotFound"
+  
+  /monopatin/ubicar/{idViaje}:
+    post:
+      summary:  ubicar monopatin en parada
+      description: se verifica que el monopatin sea ubicado en una parada, en el caso que sea correcto, se da por finalizado el viaje
+      parameters:
+      - name: idViaje
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: latitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: longitud
+        in: query
+        required: true
+        schema:
+          type: number
+          format: double
+      responses:
+        '200':
+          description:  la operacion se realizo con exito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/viaje-finalizado"
+        '400':
+          $ref: '#/components/responses/NotFound'
+  
+components:
+  schemas:
+    response-monopatin:
+      type: object
+      properties:
+        id: 
+          type: integer
+        longitud:
+          type: number
+          format: double
+        latitud:
+          type: number
+          format: double
+        kilometrosTotales:
+          type: string
+        estado:
+          type: string
+        habilitado:
+          type: boolean
+        tiempoUso:
+          type: string
+          format: duration
+        mensaje:
+          type: string
+        exito:
+          type: boolean
+    
+    request-monopatin:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: double
+        longitud:
+          type: number
+          format: double
+        estado:
+          type: boolean
+    
+    response-usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: long
+        nombre:
+          type: string
+        celular:
+          type: string
+        email:
+          type: string
+          
+    usuario:
+      type: object
+      properties:
+        id_usuario:
+          type: integer
+          format: long
+        fecha_alta:
+          type: string
+          format: localdatetime
+        nombre:
+          type: string
+        email:
+          type: string
+        celular:
+          type: string
+        cuenta_mp:
+          type: object
+          properties:
+            id_cuenta:
+              type: integer
+              format: long
+            saldo:
+              type: number
+              format: double
+    
+    response-viaje:
+      type: object
+      properties:
+        idViaje:
+          type: integer
+          format: long
+        idUsuario:
+          type: integer
+          format: long
+        idMonopatin:
+          type: integer
+          format: long
+        inicio:
+          type: string
+          format: localdatetime
+        mensaje:
+          type: string
+        exitp:
+          type: boolean
+    
+    viaje-finalizado:
+      type: object
+      properties:
+        idViaje:
+          type: integer
+          format: long
+        inicio:
+          type: string
+          format: localdatetime
+        pausa:
+          type: integer
+        finalizacion:
+          type: string
+          format: localdatetime
+        costo:
+          type: integer
+        mensaje:
+          type: string
+        exito:
+          type: boolean
+    
+  responses:
+    ok:
+      description:  "la operación se realizó con exito"
+    
+    NotFound:
+      description:  "no se encontró el objeto a modificar"
+      
+    BadRequest:
+      description:  "se ha realizado una petición de manera incorrecta"

@@ -1,0 +1,3 @@
+FROM openjdk:17-jdk-alpine
+COPY target/microMonopatin-0.0.1-SNAPSHOT.jar api-monopatin.jar
+ENTRYPOINT [ "java", "-jar", "api-monopatin.jar" ]

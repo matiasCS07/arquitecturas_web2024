@@ -1,0 +1,2 @@
+se han realizado los test sobre algunos métodos de administrador de monopatines.
+además se documentaron todos los endpoints en Swagger de manera manual, y también se realizó dentro de los mismos servicios.
